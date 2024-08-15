@@ -6,11 +6,9 @@ namespace Task_Mangement.Repository
     public interface ITask
     {
         DataTable GetAllTasks();
-        DataTable GetTaskById(int taskId);
-        int AddTask(Tasks task);
-        int UpdateTask(Tasks task);
+        Tasks GetTaskById(int taskId);
+        Tasks AddTask(Tasks task);
+        Tasks UpdateTask(Tasks task);
         int DeleteTask(int taskId);
-        DataTable GetLatesttask();
-
     }
 }

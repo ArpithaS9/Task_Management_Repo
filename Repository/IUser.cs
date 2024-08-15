@@ -6,12 +6,10 @@ namespace Task_Mangement.Repository
     public interface IUser
     {
         DataTable GetAllUsers();
-        DataTable GetUserById(int userId);
-        int AddUser(User user);
-        int UpdateUser(User user);
+        User GetUserById(int userId);
+        User AddUser(User user);
+        User UpdateUser(User user);
         int DeleteUser(int userId);
-
-        DataTable GetLatestUser();
     }
 
 }

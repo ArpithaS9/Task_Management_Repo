@@ -26,7 +26,7 @@ namespace Task_Mangement.Models
 
         [Required(ErrorMessage = "AssignedTo is required.")]
 
-        public int AssignedTo { get; set; }
+        public int? AssignedTo { get; set; }
 
 
         public DateTime CreatedAt { get; set; }

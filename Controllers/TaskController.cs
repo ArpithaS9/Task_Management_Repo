@@ -11,13 +11,13 @@ namespace Task_Mangement.Controllers
 
     [Route("api/[controller]")]
 
-    public class TasksController : ControllerBase
+    public class UserController : ControllerBase
 
     {
 
         private readonly ITask _taskRepository;
 
-        public TasksController(ITask taskRepository)
+        public UserController(ITask taskRepository)
 
         {
 
@@ -41,7 +41,7 @@ namespace Task_Mangement.Controllers
                 return BadRequest("Invalid Id");
             }
             var task =  _taskRepository.GetTaskById(id);
-            if (task.Rows.Count == 0) return NotFound();
+            if (task == null) return NotFound();
             return Ok(task);
         }
 
@@ -52,9 +52,13 @@ namespace Task_Mangement.Controllers
             {
                 return BadRequest("Invalid Data");
             }
-            _taskRepository.AddTask(task);
-            var createdTask = _taskRepository.GetLatesttask();
-            return Ok(createdTask);
+            var result =_taskRepository.AddTask(task);
+            if (result == null)
+            {
+                return StatusCode(500, "Failed to create User");
+            }
+
+            return Ok(result);
            // return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
@@ -62,16 +66,18 @@ namespace Task_Mangement.Controllers
 
         public  IActionResult UpdateTask(int id, Tasks task)
         {
-            if (id != task.Id || id == 0)
-            {
-                return BadRequest("Invalid ID");
-            }
             if (task == null)
             {
                 return BadRequest("Provide Task details to be updated");
             }
-            _taskRepository.UpdateTask(task);
-            return NoContent();
+            if (id != task.Id || id == 0)
+            {
+                return BadRequest("Invalid ID");
+            }
+            
+           var result =_taskRepository.UpdateTask(task);
+            if (result == null) { return NotFound(); }
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

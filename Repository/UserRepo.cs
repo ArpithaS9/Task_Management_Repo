@@ -53,23 +53,36 @@ namespace Task_Mangement.Repository
         }
         #endregion
 
-        #region GetAllUsers
+        #region GetUserById
         /// <summary>
         /// Description :  Method to open Database Connection  
         /// Date Modified :9 Aug 2024
         /// </summary>
-        public DataTable GetUserById(int userId)
+        public User GetUserById(int userId)
         {
             try
             {
+                User newUser = null;
+
                 using (var con = CreateConnection())
                 {
-                    var command = new SqlCommand($"SELECT * FROM Users WHERE Id = {userId}", con);
-                    var reader = command.ExecuteReader();
-                    var datatable = new DataTable();
-                    datatable.Load(reader);
-                    return datatable;
-
+                    string selectQuery = $"SELECT  * FROM Users WHERE Id = {userId} ";
+                    var selectCommand = new SqlCommand(selectQuery, con);
+                    using (SqlDataReader reader1 = selectCommand.ExecuteReader())
+                    {
+                        if (reader1.Read())
+                        {
+                            newUser = new User
+                            {
+                                Id = reader1.GetInt32(0),
+                                FirstName = reader1.GetString(1),
+                                LastName = reader1.GetString(2),
+                                Email = reader1.GetString(3),
+                                Roles = reader1.GetString(4)
+                            };
+                        }
+                    }
+                    return newUser;
                 }
             }
             catch (SqlException ex)
@@ -84,22 +97,27 @@ namespace Task_Mangement.Repository
         }
         #endregion
 
-        #region GetAllUsers
+        #region AddUser
         /// <summary>
         /// Description :  Method to open Database Connection  
         /// Date Modified :9 Aug 2024
         /// </summary>
 
-        public int AddUser(User user)
+        public User AddUser(User user)
         {
             try
             {
+                User newUser = null;
                 using (var con = CreateConnection())
                 {
-                    User user1 = new User();
-                    var command = new SqlCommand($"INSERT INTO Users (FirstName, LastName, Email, Roles)  VALUES ('" + user.FirstName + "','" + user.LastName + "','" + user.Email + "','" + user.Roles + "')", con);
-                    var rowsAffected = command.ExecuteNonQuery();
-                    return rowsAffected;
+                    var command = new SqlCommand($"INSERT INTO Users (FirstName, LastName, Email, Roles)  VALUES ('" + user.FirstName + "','" + user.LastName + "','" + user.Email + "','" + user.Roles + "') SELECT SCOPE_IDENTITY()", con);
+                    var CreatedUserId = Convert.ToInt32(command.ExecuteScalar());
+                    if(CreatedUserId > 0)
+                    {
+                        newUser = GetUserById(CreatedUserId);
+
+                    }
+                    return newUser;
                 }
             }
             catch (SqlException ex)
@@ -113,20 +131,27 @@ namespace Task_Mangement.Repository
             }
         }
         #endregion
-        #region GetAllUsers
+
+        #region UpdateUser
         /// <summary>
         /// Description :  Method to open Database Connection  
         /// Date Modified :9 Aug 2024
         /// </summary>
-        public int  UpdateUser(User user)
+        public User  UpdateUser(User user)
         {
             try
             {
+                User updatedUser = null;
                 using (var con = CreateConnection())
                 {
                     var command = new SqlCommand($"UPDATE Users SET FirstName = '" + user.FirstName + "', LastName = '" + user.LastName + "', Email = '" + user.Email + "', Roles ='" + user.Roles + $"' WHERE Id = {user.Id}", con);
-                    var rowsAffetcted = command.ExecuteNonQuery();
-                    return rowsAffetcted;
+                    var rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        updatedUser = GetUserById(user.Id);
+
+                    }
+                    return updatedUser;
                 }
             }
             catch (SqlException ex)
@@ -141,7 +166,7 @@ namespace Task_Mangement.Repository
         }
         #endregion
 
-        #region GetAllUsers
+        #region DeleteUser
         /// <summary>
         /// Description :  Method to open Database Connection  
         /// Date Modified :9 Aug 2024
@@ -169,36 +194,7 @@ namespace Task_Mangement.Repository
         }
         #endregion
 
-        #region GetAllUsers
-        /// <summary>
-        /// Description :  Method to open Database Connection  
-        /// Date Modified :9 Aug 2024
-        /// </summary>
-        public DataTable GetLatestUser()
-        {
-            try
-            {
-                using (var con = CreateConnection())
-                {
-
-                    var command1 = new SqlCommand($"Select top 1 * from Users Order by Id desc", con);
-                    var reader1 = command1.ExecuteReader();
-                    DataTable datatable = new DataTable();
-                    datatable.Load(reader1);
-                    return datatable;
-                }
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-
-            }
-        }
-        #endregion
+      
     }
 }
 

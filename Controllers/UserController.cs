@@ -56,27 +56,31 @@ public class UsersController : ControllerBase
                 return BadRequest("Invalid Data");
             }
 
-            _userRepository.AddUser(user);
-            var createdUser =   _userRepository.GetLatestUser();
+            var createdUser = _userRepository.AddUser(user);
+            if(createdUser == null)
+            {
+                return StatusCode(500,"Failed to create User");
+            }
             return Ok(createdUser);
            // return CreatedAtAction(nameof(GetUser), new { id = user.Id }, createdUser);
         }
 
         [HttpPut("{id}")]
 
-        public  IActionResult UpdateUser(int id, [FromBody] User user)
+        public  IActionResult UpdateUser(int id,  User user)
         {
-            if (id != user.Id || id == 0 )
-            {
-                return BadRequest("Invalid ID");
-            }
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest("Provide User details to be updated");
 
             }
-            _userRepository.UpdateUser(user);
-              return NoContent();
+            if (id != user.Id || id == 0 )
+            {
+                return BadRequest("Invalid ID");
+            }
+            
+            var createdUser = _userRepository.UpdateUser(user);
+            return Ok(createdUser); 
         }
 
 
