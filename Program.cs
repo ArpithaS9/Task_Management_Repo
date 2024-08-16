@@ -8,6 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUser, UserRepo>();
 builder.Services.AddScoped<ITask, TaskRepo>();
+builder.Services.AddCors(org =>
+{
+    org.AddPolicy("Allow_All", py =>
+    {
+        py.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin();
+    });
+});
 builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen();
@@ -21,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Allow_All");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
