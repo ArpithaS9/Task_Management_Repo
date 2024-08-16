@@ -13,12 +13,5 @@ namespace Task_Mangement.Repository
         {
         }
 
-        public CustomException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        protected CustomException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
